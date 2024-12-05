@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasir - Toko</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .pelanggan-table, .transaksi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .pelanggan-table th, .pelanggan-table td, .transaksi-table th, .transaksi-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .pelanggan-table th, .transaksi-table th {
+            background-color: #007bff;
+            color: white;
+        }
+        .pelanggan-table td button, .transaksi-table td button {
+            margin: 5px;
+            padding: 5px 10px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .pelanggan-table td button:hover, .transaksi-table td button:hover {
+            background-color: #0056b3;
+        }
+        .add-customer-btn {
+            background-color: #28a745;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .add-customer-btn:hover {
+            background-color: #218838;
+        }
+        .back-dashboard-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+        }
+        .back-dashboard-btn:hover {
+            background-color: #5a6268;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Kasir - Toko</h1>
+</header>
+
+<div class="container">
+    <button class="add-customer-btn" onclick="tambahPelanggan()">Tambah Pelanggan</button>
+
+    <h2>Daftar Pelanggan</h2>
+    <table class="pelanggan-table" id="pelanggan-table">
+        <thead>
+            <tr>
+                <th>Nama Pelanggan</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="pelanggan-list">
+            <!-- Daftar pelanggan akan muncul di sini -->
+        </tbody>
+    </table>
+
+    <h2>Hasil Transaksi</h2>
+    <table class="transaksi-table" id="transaksi-table">
+        <thead>
+            <tr>
+                <th>Nama Pelanggan</th>
+                <th>Total Pembelian</th>
+                <th>Tanggal</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="transaksi-list">
+            <!-- Daftar transaksi akan muncul di sini -->
+        </tbody>
+    </table>
+</div>
+
+<button class="back-dashboard-btn" onclick="window.location.href='dashboard.html'">Kembali ke Dashboard</button>
+
+<footer>
+    <p>&copy; eqdewawkwk. All Rights Reserved.</p>
+</footer>
+
+<script>
+    // Mengambil daftar pelanggan dan transaksi dari localStorage
+    let pelangganList = JSON.parse(localStorage.getItem('pelangganList')) || [];
+    let transaksiList = JSON.parse(localStorage.getItem('transaksiList')) || [];
+
+    // Menampilkan daftar pelanggan
+    function tampilkanPelanggan() {
+        const tabel = document.getElementById('pelanggan-list');
+        tabel.innerHTML = '';  // Menghapus isi tabel sebelum menambahkan data baru
+
+        pelangganList.forEach((pelanggan, index) => {
+            const row = tabel.insertRow();
+            row.insertCell(0).innerText = pelanggan;
+            const aksiCell = row.insertCell(1);
+            aksiCell.innerHTML = `
+                <button onclick="editPelanggan(${index})">Edit/Transaksi</button>
+                <button onclick="hapusPelanggan(${index})">Hapus</button>
+            `;
+        });
+    }
+
+    // Menampilkan daftar transaksi
+    function tampilkanTransaksi() {
+        const tabel = document.getElementById('transaksi-list');
+        tabel.innerHTML = '';  // Menghapus isi tabel sebelum menambahkan data baru
+
+        transaksiList.forEach((transaksi, index) => {
+            const row = tabel.insertRow();
+            row.insertCell(0).innerText = transaksi.namaPelanggan;
+            row.insertCell(1).innerText = `Rp ${transaksi.totalPembelian}`;
+            row.insertCell(2).innerText = transaksi.tanggal;
+            const aksiCell = row.insertCell(3);
+            aksiCell.innerHTML = `
+                <button onclick="hapusTransaksi(${index})">Hapus</button>
+            `;
+        });
+    }
+
+    // Fungsi untuk menambah pelanggan
+    function tambahPelanggan() {
+        const namaPelanggan = prompt('Masukkan nama pelanggan:');
+        if (namaPelanggan) {
+            pelangganList.push(namaPelanggan);
+            localStorage.setItem('pelangganList', JSON.stringify(pelangganList));
+            tampilkanPelanggan();
+        }
+    }
+
+    // Fungsi untuk menghapus pelanggan
+    function hapusPelanggan(index) {
+        if (confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')) {
+            pelangganList.splice(index, 1);
+            localStorage.setItem('pelangganList', JSON.stringify(pelangganList));
+            tampilkanPelanggan();
+        }
+    }
+
+    // Fungsi untuk membuka halaman edit pelanggan (transaksi dilakukan di sini)
+    function editPelanggan(index) {
+        const namaPelanggan = pelangganList[index];
+        window.location.href = 'edit-pelanggan.html?nama=' + encodeURIComponent(namaPelanggan);
+    }
+
+    // Fungsi untuk menghapus transaksi
+    function hapusTransaksi(index) {
+        if (confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
+            transaksiList.splice(index, 1);
+            localStorage.setItem('transaksiList', JSON.stringify(transaksiList));
+            tampilkanTransaksi();
+        }
+    }
+
+    // Menampilkan pelanggan dan transaksi saat halaman dimuat
+    tampilkanPelanggan();
+    tampilkanTransaksi();
+</script>
+
+</body>
+</html>

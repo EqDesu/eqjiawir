@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - Toko</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="register-container">
+        <h2>Daftar Akun</h2>
+        <div class="form-box">
+            <form id="registerForm">
+                <div class="input-group">
+                    <label for="fullname">Nama Lengkap</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="input-group">
+                    <label for="confirm-password">Konfirmasi Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
+                <button type="submit" class="btn-register">Daftar</button>
+            </form>
+            <p class="login-link">Sudah punya akun? <a href="login.html">Masuk</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const fullname = document.getElementById('fullname').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Validasi password
+            if (password !== confirmPassword) {
+                alert('Password dan konfirmasi password tidak cocok!');
+                return;
+            }
+
+            // Ambil data karyawan yang sudah ada di localStorage
+            let karyawanList = JSON.parse(localStorage.getItem('karyawanList')) || [];
+
+            // Menentukan posisi berdasarkan username
+            const posisi = (username.toUpperCase() === "EQUILLYPTIAN") ? "Owner" : "Karyawan";
+
+            // Menambahkan karyawan baru ke dalam daftar
+            karyawanList.push({
+                namaLengkap: fullname,
+                username: username,
+                password: password,
+                posisi: posisi
+            });
+
+            // Simpan daftar karyawan yang diperbarui ke localStorage
+            localStorage.setItem('karyawanList', JSON.stringify(karyawanList));
+
+            // Jika username adalah Owner, pastikan data Owner pertama kali ada
+            if (posisi === "Owner") {
+                alert('Akun Owner berhasil didaftarkan!');
+            } else {
+                alert('Akun Karyawan berhasil didaftarkan!');
+            }
+
+            // Setelah berhasil mendaftar, arahkan ke halaman login
+            window.location.href = 'login.html'; // Redirect ke halaman login setelah registrasi
+        });
+    </script>
+</body>
+</html>

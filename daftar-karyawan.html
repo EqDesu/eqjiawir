@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Karyawan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;  /* Mengubah ke kolom */
+            justify-content: center;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        header .back-btn {
+            background-color: #f0ad4e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;  /* Memberikan jarak dari judul */
+        }
+        header .back-btn:hover {
+            background-color: #ec971f;
+        }
+
+        .container {
+            margin: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        .edit-btn {
+            background-color: #f0ad4e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .edit-btn:disabled {
+            background-color: #ccc;
+        }
+
+        @media screen and (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            table {
+                font-size: 14px;
+            }
+            header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Daftar Karyawan</h1>
+    <button class="back-btn" onclick="window.history.back()">Kembali</button>
+</header>
+
+<div class="container">
+    <table>
+        <thead>
+            <tr>
+                <th>Nama Lengkap</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Posisi</th>
+                <th>Aksi</th> <!-- Kolom untuk tombol edit -->
+            </tr>
+        </thead>
+        <tbody id="karyawan-list">
+            <!-- Data karyawan akan muncul di sini -->
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <p>&copy; eqdewawkwk. All Rights Reserved.</p>
+</footer>
+
+<script>
+    // Mengambil data pengguna yang sedang login dari localStorage
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+
+    // Mengecek apakah pengguna adalah Owner
+    if (!loggedInUser || loggedInUser.posisi !== "Owner") {
+        // Jika bukan Owner, sembunyikan kolom aksi
+        document.querySelector('th:nth-child(5)').style.display = 'none';  // Menyembunyikan header aksi
+        document.querySelector('td:nth-child(5)').style.display = 'none';  // Menyembunyikan tombol aksi di baris pertama
+    }
+
+    // Mengambil data karyawan dari localStorage
+    const karyawanList = JSON.parse(localStorage.getItem('karyawanList')) || [];
+
+    // Menampilkan data karyawan
+    function tampilkanKaryawan() {
+        const tbody = document.getElementById('karyawan-list');
+        tbody.innerHTML = ''; // Menghapus konten lama
+
+        if (karyawanList.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">Tidak ada data karyawan ditemukan.</td></tr>';
+            return;
+        }
+
+        karyawanList.forEach((karyawan, index) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = karyawan.namaLengkap;
+            row.insertCell(1).innerText = karyawan.username;
+            row.insertCell(2).innerText = karyawan.password; // Menampilkan password (sebaiknya di-hash di aplikasi nyata)
+            row.insertCell(3).innerText = karyawan.posisi; // Menampilkan posisi karyawan
+
+            // Menambahkan tombol edit (hanya bisa diakses oleh Owner)
+            if (loggedInUser.posisi === "Owner") {
+                const editCell = row.insertCell(4);
+                const editButton = document.createElement('button');
+                editButton.classList.add('edit-btn');
+                editButton.innerText = 'Edit Posisi';
+                editButton.onclick = function() {
+                    editPosisi(karyawan.username);
+                };
+                editCell.appendChild(editButton);
+            }
+        });
+    }
+
+    // Fungsi untuk mengedit posisi karyawan
+    function editPosisi(username) {
+        const newPosisi = prompt('Masukkan posisi baru:');
+
+        if (newPosisi) {
+            const karyawanIndex = karyawanList.findIndex(karyawan => karyawan.username === username);
+            if (karyawanIndex !== -1) {
+                karyawanList[karyawanIndex].posisi = newPosisi; // Update posisi karyawan
+                localStorage.setItem('karyawanList', JSON.stringify(karyawanList)); // Simpan perubahan di localStorage
+                alert('Posisi berhasil diperbarui!');
+                tampilkanKaryawan(); // Update tampilan tabel
+            }
+        }
+    }
+
+    // Memanggil fungsi tampilkanKaryawan saat halaman dimuat
+    tampilkanKaryawan();
+</script>
+
+</body>
+</html>

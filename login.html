@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Toko</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-login">Masuk</button>
+        </form>
+        <p class="signup-link">Belum punya akun? <a href="register.html">Daftar</a></p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Ambil data karyawan dari localStorage
+            const karyawanList = JSON.parse(localStorage.getItem('karyawanList')) || [];
+
+            // Cek apakah username dan password cocok dengan yang ada di localStorage
+            const karyawan = karyawanList.find(karyawan => karyawan.username === username && karyawan.password === password);
+
+            if (karyawan) {
+                // Jika login berhasil, arahkan ke dashboard
+                alert('Login berhasil!');
+
+                // Menyimpan data posisi untuk kebutuhan hak akses
+                localStorage.setItem('loggedInUser', JSON.stringify(karyawan));
+
+                // Arahkan ke dashboard, bisa mengubah URL jika diperlukan
+                window.location.href = 'dashboard.html'; // Ganti dengan URL dashboard yang sesuai
+            } else {
+                // Jika login gagal
+                alert('Username atau password salah!');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan Barang - Toko</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .barang-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .barang-table th, .barang-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .barang-table th {
+            background-color: #007bff;
+            color: white;
+        }
+        .barang-table td button {
+            margin: 5px;
+            padding: 5px 10px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .barang-table td button:hover {
+            background-color: #0056b3;
+        }
+        .add-barang-btn {
+            background-color: #28a745;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .add-barang-btn:hover {
+            background-color: #218838;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+        .back-dashboard-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+        }
+        .back-dashboard-btn:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Pengaturan Barang - Toko</h1>
+</header>
+
+<div class="container">
+    <button class="add-barang-btn" onclick="tambahBarang()">Tambah Barang Baru</button>
+    
+    <table class="barang-table" id="barang-table">
+        <thead>
+            <tr>
+                <th>Nama Barang</th>
+                <th>Harga</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="barang-list">
+            <!-- Data barang akan muncul di sini -->
+        </tbody>
+    </table>
+</div>
+
+<button class="back-dashboard-btn" onclick="window.location.href='dashboard.html'">Kembali ke Dashboard</button>
+
+<footer>
+    <p>&copy; eqdewawkwk. All Rights Reserved.</p>
+</footer>
+
+<script>
+    // Mengambil data barang dari localStorage atau membuat array kosong jika tidak ada
+    let barangList = JSON.parse(localStorage.getItem('barangList')) || [];
+
+    // Fungsi untuk menampilkan barang
+    function tampilkanBarang() {
+        const tabel = document.getElementById('barang-list');
+        tabel.innerHTML = '';  // Menghapus isi tabel sebelum menambahkan data baru
+
+        barangList.forEach((barang, index) => {
+            const row = tabel.insertRow();
+            row.insertCell(0).innerText = barang.nama;
+            row.insertCell(1).innerText = 'Rp ' + formatHarga(barang.harga);
+            const aksiCell = row.insertCell(2);
+            aksiCell.innerHTML = `
+                <button onclick="editBarang(${index})">Edit</button>
+                <button onclick="hapusBarang(${index})">Hapus</button>
+            `;
+        });
+    }
+
+    // Fungsi untuk menambahkan pemisah ribuan pada harga
+    function formatHarga(harga) {
+        return harga.toLocaleString('id-ID');
+    }
+
+    // Fungsi untuk menambah barang baru
+    function tambahBarang() {
+        const nama = prompt('Masukkan nama barang:');
+        if (!nama) return;  // Jika nama kosong, keluar dari fungsi
+
+        const harga = prompt('Masukkan harga barang:');
+        if (!harga) return;  // Jika harga kosong, keluar dari fungsi
+
+        // Mengonversi harga ke angka sebelum menyimpannya
+        const hargaAngka = parseInt(harga.replace(/[^0-9]/g, ''), 10);
+
+        const barangBaru = {
+            nama: nama,
+            harga: hargaAngka
+        };
+
+        barangList.push(barangBaru);
+        localStorage.setItem('barangList', JSON.stringify(barangList));
+
+        tampilkanBarang();  // Menampilkan barang yang sudah diperbarui
+    }
+
+    // Fungsi untuk mengedit barang
+    function editBarang(index) {
+        const barang = barangList[index];
+        const namaBaru = prompt('Edit nama barang:', barang.nama);
+        const hargaBaru = prompt('Edit harga barang:', formatHarga(barang.harga));
+
+        if (namaBaru && hargaBaru) {
+            // Mengonversi harga baru menjadi angka
+            const hargaAngka = parseInt(hargaBaru.replace(/[^0-9]/g, ''), 10);
+
+            barangList[index] = { nama: namaBaru, harga: hargaAngka };
+            localStorage.setItem('barangList', JSON.stringify(barangList));
+            tampilkanBarang();
+        }
+    }
+
+    // Fungsi untuk menghapus barang
+    function hapusBarang(index) {
+        if (confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
+            barangList.splice(index, 1);  // Menghapus barang dari array
+            localStorage.setItem('barangList', JSON.stringify(barangList));  // Simpan perubahan ke localStorage
+            tampilkanBarang();  // Menampilkan kembali data yang sudah diperbarui
+        }
+    }
+
+    // Menampilkan barang saat halaman dimuat
+    tampilkanBarang();
+</script>
+
+</body>
+</html>

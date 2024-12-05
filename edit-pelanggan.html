@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Pelanggan - Toko</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .back-dashboard-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .back-dashboard-btn:hover {
+            background-color: #5a6268;
+        }
+        .container {
+            padding: 20px;
+        }
+        .barang-table, .keranjang-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .barang-table th, .barang-table td, .keranjang-table th, .keranjang-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .barang-table th, .keranjang-table th {
+            background-color: #007bff;
+            color: white;
+        }
+        .barang-table td button, .keranjang-table td button {
+            margin: 5px;
+            padding: 5px 10px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .barang-table td button:hover, .keranjang-table td button:hover {
+            background-color: #0056b3;
+        }
+        .simpan-transaksi-btn {
+            background-color: #28a745;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .simpan-transaksi-btn:hover {
+            background-color: #218838;
+        }
+        .total-pembelian {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <h1>Edit Pelanggan - Toko</h1>
+        <!-- Tombol Kembali di bawah judul dalam wilayah header -->
+        <button class="back-dashboard-btn" onclick="window.location.href='kasir.html'">Kembali ke Kasir</button>
+    </div>
+</header>
+
+<div class="container">
+    <h2>Daftar Barang</h2>
+    <table class="barang-table" id="barang-table">
+        <thead>
+            <tr>
+                <th>Nama Barang</th>
+                <th>Harga</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="barang-list">
+            <!-- Daftar barang akan muncul di sini -->
+        </tbody>
+    </table>
+
+    <h2>Keranjang</h2>
+    <table class="keranjang-table" id="keranjang-table">
+        <thead>
+            <tr>
+                <th>Nama Barang</th>
+                <th>Harga Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="keranjang-list">
+            <!-- Daftar keranjang akan muncul di sini -->
+        </tbody>
+    </table>
+
+    <div class="total-pembelian" id="total-pembelian">
+        Total Pembelian: Rp 0
+    </div>
+
+    <button class="simpan-transaksi-btn" onclick="simpanTransaksi()">Simpan Transaksi</button>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const namaPelanggan = urlParams.get('nama');
+    const barangList = JSON.parse(localStorage.getItem('barangList')) || [];
+    let keranjangList = JSON.parse(localStorage.getItem('keranjangList')) || [];
+
+    // Menampilkan barang
+    function tampilkanBarang() {
+        const tabel = document.getElementById('barang-list');
+        tabel.innerHTML = '';  // Menghapus isi tabel sebelum menambahkan data baru
+
+        barangList.forEach((barang, index) => {
+            const row = tabel.insertRow();
+            row.insertCell(0).innerText = barang.nama;
+            row.insertCell(1).innerText = `Rp ${barang.harga}`;
+            const aksiCell = row.insertCell(2);
+            aksiCell.innerHTML = `<button onclick="tambahKeKeranjang(${index})">Tambah ke Keranjang</button>`;
+        });
+    }
+
+    // Menampilkan keranjang
+    function tampilkanKeranjang() {
+        const tabel = document.getElementById('keranjang-list');
+        tabel.innerHTML = '';  // Menghapus isi tabel sebelum menambahkan data baru
+
+        keranjangList.forEach((item, index) => {
+            const row = tabel.insertRow();
+            row.insertCell(0).innerText = item.nama;
+            row.insertCell(1).innerText = `Rp ${item.hargaTotal}`;
+            const aksiCell = row.insertCell(2);
+            aksiCell.innerHTML = `<button onclick="hapusDariKeranjang(${index})">Hapus</button>`;
+        });
+
+        // Update total pembelian
+        updateTotalPembelian();
+    }
+
+    // Fungsi untuk menambah barang ke keranjang tanpa input jumlah
+    function tambahKeKeranjang(barangIndex) {
+        const barang = barangList[barangIndex];
+        const itemKeranjang = { 
+            nama: barang.nama, 
+            hargaTotal: barang.harga 
+        };
+
+        keranjangList.push(itemKeranjang);
+        localStorage.setItem('keranjangList', JSON.stringify(keranjangList));
+        tampilkanKeranjang();
+    }
+
+    // Fungsi untuk menghapus barang dari keranjang
+    function hapusDariKeranjang(index) {
+        if (confirm('Apakah Anda yakin ingin menghapus barang ini dari keranjang?')) {
+            keranjangList.splice(index, 1);
+            localStorage.setItem('keranjangList', JSON.stringify(keranjangList));
+            tampilkanKeranjang();
+        }
+    }
+
+    // Fungsi untuk menghitung dan memperbarui total pembelian
+    function updateTotalPembelian() {
+        const totalPembelian = keranjangList.reduce((total, item) => total + item.hargaTotal, 0);
+        document.getElementById('total-pembelian').innerText = `Total Pembelian: Rp ${totalPembelian}`;
+    }
+
+    // Fungsi untuk menyimpan transaksi ke kasir
+    function simpanTransaksi() {
+        if (keranjangList.length === 0) {
+            alert('Keranjang kosong, tidak ada transaksi untuk disimpan.');
+            return;
+        }
+
+        const totalPembelian = keranjangList.reduce((total, item) => total + item.hargaTotal, 0);
+        const tanggalTransaksi = new Date().toLocaleDateString();
+        
+        const transaksiList = JSON.parse(localStorage.getItem('transaksiList')) || [];
+        const transaksi = {
+            namaPelanggan: namaPelanggan,
+            totalPembelian: totalPembelian,
+            tanggal: tanggalTransaksi
+        };
+
+        transaksiList.push(transaksi);
+        localStorage.setItem('transaksiList', JSON.stringify(transaksiList));
+
+        // Mengosongkan keranjang setelah transaksi disimpan
+        keranjangList = [];
+        localStorage.setItem('keranjangList', JSON.stringify(keranjangList));
+
+        alert('Transaksi berhasil disimpan!');
+        window.location.href = 'kasir.html';  // Kembali ke halaman kasir
+    }
+
+    // Menampilkan barang dan keranjang saat halaman dimuat
+    tampilkanBarang();
+    tampilkanKeranjang();
+</script>
+
+</body>
+</html>
