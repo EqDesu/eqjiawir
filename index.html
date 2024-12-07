@@ -64,8 +64,12 @@
         <a href="login.html" class="button">Ke Halaman Login</a>
         <canvas id="clock" width="200" height="200"></canvas>
     </div>
-
-    <script>
+<script>
+     if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      console.log('Service Worker registered with scope:', registration.scope);
+    });
+     }
         function drawClock() {
             var canvas = document.getElementById("clock");
             var ctx = canvas.getContext("2d");
