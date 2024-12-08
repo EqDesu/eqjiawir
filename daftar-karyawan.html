@@ -17,7 +17,7 @@
             padding: 10px 20px;
             text-align: center;
             display: flex;
-            flex-direction: column;  /* Mengubah ke kolom */
+            flex-direction: column;  
             justify-content: center;
             align-items: center;
         }
@@ -147,10 +147,10 @@
             const row = tbody.insertRow();
             row.insertCell(0).innerText = karyawan.namaLengkap;
             row.insertCell(1).innerText = karyawan.username;
-            row.insertCell(2).innerText = karyawan.password; // Menampilkan password (sebaiknya di-hash di aplikasi nyata)
-            row.insertCell(3).innerText = karyawan.posisi; // Menampilkan posisi karyawan
+            row.insertCell(2).innerText = karyawan.password; 
+            row.insertCell(3).innerText = karyawan.posisi; 
 
-            // Menambahkan tombol edit (hanya bisa diakses oleh Owner)
+            
             if (loggedInUser.posisi === "Owner") {
                 const editCell = row.insertCell(4);
                 const editButton = document.createElement('button');
@@ -171,15 +171,15 @@
         if (newPosisi) {
             const karyawanIndex = karyawanList.findIndex(karyawan => karyawan.username === username);
             if (karyawanIndex !== -1) {
-                karyawanList[karyawanIndex].posisi = newPosisi; // Update posisi karyawan
-                localStorage.setItem('karyawanList', JSON.stringify(karyawanList)); // Simpan perubahan di localStorage
+                karyawanList[karyawanIndex].posisi = newPosisi; 
+                localStorage.setItem('karyawanList', JSON.stringify(karyawanList)); 
                 alert('Posisi berhasil diperbarui!');
                 tampilkanKaryawan(); // Update tampilan tabel
             }
         }
     }
 
-    // Memanggil fungsi tampilkanKaryawan saat halaman dimuat
+    
     tampilkanKaryawan();
 </script>
 
