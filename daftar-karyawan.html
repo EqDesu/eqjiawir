@@ -106,11 +106,11 @@
                 <th>Username</th>
                 <th>Password</th>
                 <th>Posisi</th>
-                <th>Aksi</th> <!-- Kolom untuk tombol edit -->
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody id="karyawan-list">
-            <!-- Data karyawan akan muncul di sini -->
+            
         </tbody>
     </table>
 </div>
@@ -164,7 +164,7 @@
         });
     }
 
-    // Fungsi untuk mengedit posisi karyawan
+    
     function editPosisi(username) {
         const newPosisi = prompt('Masukkan posisi baru:');
 
@@ -174,7 +174,7 @@
                 karyawanList[karyawanIndex].posisi = newPosisi; 
                 localStorage.setItem('karyawanList', JSON.stringify(karyawanList)); 
                 alert('Posisi berhasil diperbarui!');
-                tampilkanKaryawan(); // Update tampilan tabel
+                tampilkanKaryawan(); 
             }
         }
     }
