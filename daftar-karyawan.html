@@ -32,7 +32,7 @@
             padding: 8px 16px;
             cursor: pointer;
             border-radius: 4px;
-            margin-top: 10px;  /* Memberikan jarak dari judul */
+            margin-top: 10px; 
         }
         header .back-btn:hover {
             background-color: #ec971f;
@@ -120,23 +120,23 @@
 </footer>
 
 <script>
-    // Mengambil data pengguna yang sedang login dari localStorage
+    
     const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
-    // Mengecek apakah pengguna adalah Owner
+    
     if (!loggedInUser || loggedInUser.posisi !== "Owner") {
-        // Jika bukan Owner, sembunyikan kolom aksi
-        document.querySelector('th:nth-child(5)').style.display = 'none';  // Menyembunyikan header aksi
-        document.querySelector('td:nth-child(5)').style.display = 'none';  // Menyembunyikan tombol aksi di baris pertama
+        
+        document.querySelector('th:nth-child(5)').style.display = 'none';  
+        document.querySelector('td:nth-child(5)').style.display = 'none';  
     }
 
-    // Mengambil data karyawan dari localStorage
+    
     const karyawanList = JSON.parse(localStorage.getItem('karyawanList')) || [];
 
-    // Menampilkan data karyawan
+    
     function tampilkanKaryawan() {
         const tbody = document.getElementById('karyawan-list');
-        tbody.innerHTML = ''; // Menghapus konten lama
+        tbody.innerHTML = ''; 
 
         if (karyawanList.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5">Tidak ada data karyawan ditemukan.</td></tr>';
